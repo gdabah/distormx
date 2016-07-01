@@ -1,0 +1,90 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="..\..\distorm3\src\decoder.c">
+      <Filter>distorm3</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\distorm3\src\distorm.c">
+      <Filter>distorm3</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\distorm3\src\instructions.c">
+      <Filter>distorm3</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\distorm3\src\insts.c">
+      <Filter>distorm3</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\distorm3\src\mnemonics.c">
+      <Filter>distorm3</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\distorm3\src\operands.c">
+      <Filter>distorm3</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\distorm3\src\prefix.c">
+      <Filter>distorm3</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\distorm3\src\textdefs.c">
+      <Filter>distorm3</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\distorm3\src\wstring.c">
+      <Filter>distorm3</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\distormx.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\OS.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\distorm3\src\config.h">
+      <Filter>distorm3</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\distorm3\src\decoder.h">
+      <Filter>distorm3</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\distorm3\include\distorm.h">
+      <Filter>distorm3</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\distorm3\src\instructions.h">
+      <Filter>distorm3</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\distorm3\src\insts.h">
+      <Filter>distorm3</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\distorm3\include\mnemonics.h">
+      <Filter>distorm3</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\distorm3\src\operands.h">
+      <Filter>distorm3</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\distorm3\src\prefix.h">
+      <Filter>distorm3</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\distorm3\src\textdefs.h">
+      <Filter>distorm3</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\distorm3\src\wstring.h">
+      <Filter>distorm3</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\distorm3\src\x86defs.h">
+      <Filter>distorm3</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\OS.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\distormx.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="distorm3">
+      <UniqueIdentifier>{61b6d723-91a8-491a-b469-497354384886}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{df309087-218c-400b-913a-7c3759f3a061}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{006d818a-05f3-4d46-ab3c-c56b2fca8877}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
