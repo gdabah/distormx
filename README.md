@@ -1,7 +1,6 @@
 # diStormX
-The ultimate hooking library
-
-Features:
+The ultimate hooking library  
+Features:  
 * Supports both x86/x64
 * Simple APIs and batch hooks
 * Low memory foot print, will re-use trampoline pages as much as possible
