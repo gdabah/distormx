@@ -3,7 +3,7 @@ OS.c - Cross paltform OS APIs
 diStormX - The ultimate hooking library
 https://github.com/gdabah/distormx
 distorm at gmail dot com
-Copyright (C) 2015-2016 Gil Dabah
+Copyright (C) 2015-2020 Gil Dabah
 This library is licensed under the BSD license. See the file COPYING.
 */
 

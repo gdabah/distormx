@@ -1,8 +1,8 @@
 /*
-diStormX 0.9 - The ultimate hooking library for x86/x64
+diStormX 1.0 - The ultimate hooking library for x86/x64
 https://github.com/gdabah/distormx
 distorm at gmail dot com
-Copyright (C) 2015-2016 Gil Dabah
+Copyright (C) 2015-2020 Gil Dabah
 This library is licensed under the BSD license. See the file COPYING.
 
 Features:
@@ -11,11 +11,6 @@ Features:
  3) Low memory foot print, will re-use trampoline pages as much as possible
  4) RWX sensitive, will temporarily enable RWX and then revert to RX when writing trampolines
  5) Uses a private heap
-
-TODOs:
- 1) context per deferring mode?
- 2) used APIs in OS.x should be protected (against other hooks)
- 3) Unit Tests!!!
 */
  
 

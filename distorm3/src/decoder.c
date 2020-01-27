@@ -4,7 +4,7 @@ decoder.c
 diStorm3 - Powerful disassembler for X86/AMD64
 http://ragestorm.net/distorm/
 distorm at gmail dot com
-Copyright (C) 2003-2016 Gil Dabah
+Copyright (C) 2003-2020 Gil Dabah
 This library is licensed under the BSD license. See the file COPYING.
 */
 
@@ -91,6 +91,7 @@ static _DecodeResult decode_inst(_CodeInfo* ci, _PrefixState* ps, _DInst* di)
 
 	/* Holds the info about the current found instruction. */
 	_InstInfo* ii = NULL;
+	_InstInfo iip; /* Privileged instruction cache. */
 	_InstSharedInfo* isi = NULL;
 
 	/* Used only for special CMP instructions which have pseudo opcodes suffix. */
@@ -111,10 +112,18 @@ static _DecodeResult decode_inst(_CodeInfo* ci, _PrefixState* ps, _DInst* di)
 	if (ii == NULL) goto _Undecodable;
 	isi = &InstSharedInfoTable[ii->sharedIndex];
 	instFlags = FlagsTable[isi->flagsIndex];
-
-	/* Copy the privileged bit and remove it from the opcodeId field ASAP. */
 	privilegedFlag = ii->opcodeId & OPCODE_ID_PRIVILEGED;
-	ii->opcodeId &= ~OPCODE_ID_PRIVILEGED;
+
+	if (privilegedFlag) {
+		/*
+		 * Copy the privileged instruction info so we can remove the privileged bit
+		 * from the opcodeId field. This makes sure we're not modifying the tables
+		 * in case we lookup this privileged instruction later.
+		 */
+		iip = *ii;
+		iip.opcodeId &= ~OPCODE_ID_PRIVILEGED;
+		ii = &iip;
+	}
 
 	/*
 	 * If both REX and OpSize are available we will have to disable the OpSize, because REX has precedence.
@@ -502,7 +511,7 @@ _DecodeResult decode_internal(_CodeInfo* _ci, int supportOldIntr, _DInst result[
 			code += prefixSize;
 			codeOffset += prefixSize;
 
-			/* If we got only prefixes continue to next instruction. */
+			/* If we got only prefixes continue to next instruction, note that DF_SINGLE_BYTE_STEP is ignored here. */
 			if (prefixSize == INST_MAXIMUM_SIZE) continue;
 		}
 
@@ -576,14 +585,27 @@ _DecodeResult decode_internal(_CodeInfo* _ci, int supportOldIntr, _DInst result[
 				prefixSize -= 1;
 				codeLen += 1;
 			}
+			/* DF_SINGLE_BYTE_STEP is ignored here. */
 			ps.last = ps.start + prefixSize - 1;
 			code = ps.last + 1;
 			codeOffset = startInstOffset + prefixSize;
 		} else {
 			/* Advance to next instruction. */
-			codeLen -= pdi->size;
-			codeOffset += pdi->size;
-			code += pdi->size;
+
+			if (!(_ci->features & DF_SINGLE_BYTE_STEP)) { /* Start with the more likely happy flow. */
+				codeLen -= pdi->size;
+				codeOffset += pdi->size;
+				code += pdi->size;
+			} else {
+				/* Skip one byte only, so ignore the prefixes read. */
+				codeLen += prefixSize - 1;
+				codeOffset = codeOffset - prefixSize + 1;
+				code = code - prefixSize + 1;
+
+				/* Keep ci in sync. */
+				ci.code = code;
+				ci.codeLen = codeLen;
+			}
 
 			/* Instruction's size should include prefixes. */
 			pdi->size += (uint8_t)prefixSize;
@@ -622,18 +644,24 @@ _DecodeResult decode_internal(_CodeInfo* _ci, int supportOldIntr, _DInst result[
 		/* Fix next offset. */
 		_ci->nextOffset = codeOffset;
 
-		/* Check whether we need to stop on any flow control instruction. */
+		/* Check whether we need to stop on any feature. */
 		features = _ci->features;
-		mfc = META_GET_FC(pdi->meta);
-		if ((decodeResult == DECRES_SUCCESS) && (features & DF_STOP_ON_FLOW_CONTROL)) {
-			if (((features & DF_STOP_ON_CALL) && (mfc == FC_CALL)) ||
-				((features & DF_STOP_ON_RET) && (mfc == FC_RET)) ||
-				((features & DF_STOP_ON_SYS) && (mfc == FC_SYS)) ||
-				((features & DF_STOP_ON_UNC_BRANCH) && (mfc == FC_UNC_BRANCH)) ||
-				((features & DF_STOP_ON_CND_BRANCH) && (mfc == FC_CND_BRANCH)) ||
-				((features & DF_STOP_ON_INT) && (mfc == FC_INT)) ||
-				((features & DF_STOP_ON_CMOV) && (mfc == FC_CMOV)))
-				return DECRES_SUCCESS;
+		if (decodeResult == DECRES_SUCCESS) {
+			if ((features & DF_STOP_ON_PRIVILEGED) && (FLAG_GET_PRIVILEGED(pdi->flags))) return DECRES_SUCCESS;
+
+			if (features & DF_STOP_ON_FLOW_CONTROL) {
+				mfc = META_GET_FC(pdi->meta);
+				if (((features & DF_STOP_ON_CALL) && (mfc == FC_CALL)) ||
+					((features & DF_STOP_ON_RET) && (mfc == FC_RET)) ||
+					((features & DF_STOP_ON_SYS) && (mfc == FC_SYS)) ||
+					((features & DF_STOP_ON_UNC_BRANCH) && (mfc == FC_UNC_BRANCH)) ||
+					((features & DF_STOP_ON_CND_BRANCH) && (mfc == FC_CND_BRANCH)) ||
+					((features & DF_STOP_ON_INT) && (mfc == FC_INT)) ||
+					((features & DF_STOP_ON_CMOV) && (mfc == FC_CMOV)) ||
+					((features & DF_STOP_ON_HLT) && (mfc == FC_HLT))) {
+						return DECRES_SUCCESS;
+				}
+			}
 		}
 	}
 
