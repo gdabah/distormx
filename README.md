@@ -8,5 +8,6 @@ Features:
 * Uses a private heap
 * Uses an OS abstraction layer - easy to add support for other OSs
 * Currently supports only Windows
+* Heavily tested and in field too
 
 This library is licensed under BSD.
