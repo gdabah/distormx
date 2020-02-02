@@ -375,7 +375,7 @@ _NOINLINE void test8()
 	{
 		threads[i] = CreateThread(NULL, 0, thread1, NULL, 0, NULL);
 		assert(NULL != threads[i]);
-		SetThreadAffinityMask(threads[i], (DWORD)(1 << i));
+		SetThreadAffinityMask(threads[i], (DWORD_PTR)1 << i);
 	}
 
 	g_orig_f7 = f7;
@@ -390,7 +390,7 @@ _NOINLINE void test8()
 	g_running = false;
 	Sleep(100);
 
-	distormx_destroy();
+	distormx_destroy(true);
 
 	assert(g_stubran == true);
 }
@@ -421,10 +421,10 @@ void test9()
 	{
 		threads[i] = CreateThread(NULL, 0, thread1, NULL, 0, NULL);
 		assert(NULL != threads[i]);
-		SetThreadAffinityMask(threads[i], (DWORD)(1 << i));
+		SetThreadAffinityMask(threads[i], (DWORD_PTR)1 << i);
 	}
 
-	for (unsigned int i = 0; i < 10000; i++)
+	for (unsigned int i = 0; i < 100; i++)
 	{
 		distormx_begin_defer();
 
@@ -436,6 +436,8 @@ void test9()
 
 		/* Now turn on the hook. */
 		distormx_commit();
+
+		distormx_unhook(&g_orig_f7);
 	}
 
 	/* The threads will quit now. */
@@ -647,6 +649,48 @@ void test13()
 
 #endif
 
+///////////////////////////////////
+
+void f10()
+{
+	printf("f10 here\n");
+}
+
+void f10_stub()
+{
+	printf("f10 stub here\n");
+}
+
+
+/* Tests trampolines page isn't RWX at leisure. */
+void test14()
+{
+	bool RX = false;
+	void (*orig_f10)() = f10;
+	if (!distormx_hook((void**)&orig_f10, f10_stub)) {
+		printf("Failed hooking");
+		assert(false);
+	}
+
+	f10();
+
+#if WIN_TESTABLE
+	__try
+	{
+		*(unsigned char*)orig_f10 = 0xc3; /* Should fail. */
+	}
+	__except (1)
+	{
+		RX = true;
+	}
+
+	/* We are not supposed to be able to write on the RWX page. */
+	assert(RX);
+#endif
+
+	distormx_destroy();
+}
+
 int main()
 {
 	printf("Test1 - basic functionality:\n");
@@ -685,6 +729,9 @@ int main()
 
 	printf("\nTest13 - RIP relative hook:\n");
 	test13();
+
+	printf("\nTest14 - Verify trampolines page isn't RWX.\n");
+	test14();
 
 	return 0;
 }
