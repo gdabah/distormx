@@ -25,9 +25,6 @@
     <ClCompile Include="..\..\distorm3\src\textdefs.c">
       <Filter>distorm3</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\distorm3\src\wstring.c">
-      <Filter>distorm3</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\distormx.c">
       <Filter>Source Files</Filter>
     </ClCompile>

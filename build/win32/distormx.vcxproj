@@ -42,7 +42,6 @@
     <ClCompile Include="..\..\distorm3\src\operands.c" />
     <ClCompile Include="..\..\distorm3\src\prefix.c" />
     <ClCompile Include="..\..\distorm3\src\textdefs.c" />
-    <ClCompile Include="..\..\distorm3\src\wstring.c" />
     <ClCompile Include="..\..\src\distormx.c" />
     <ClCompile Include="..\..\src\OS.c" />
   </ItemGroup>
